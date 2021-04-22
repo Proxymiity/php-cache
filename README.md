@@ -4,7 +4,7 @@ This is not intended for a "public" usage.
 The original use case is to cache images from SEA servers which takes a while to reply.  
 **There is no authentication included with the cache nor the API.**
 
-###Cache usage
+### Cache usage
 Get a file, or cache it if it's not in the cache:  
 ``https://your-cache-server.com/cache/cacher.php?url=https://a-slow-server.com/image.png``
 
@@ -23,7 +23,7 @@ You can view a live version of the file using the live argument:
 *The live argument is prioritized over the refresh argument.  
 You don't have to actually set their value to true or 1, the script only checks if they're set.*
 
-###API Usage
+### API Usage
 Get the status of a file (its hash, filename, MIME type and cache status):  
 ``https://your-cache-server.com/cache/api.php?url=https://a-slow-server.com/image.png``
 Reply:
