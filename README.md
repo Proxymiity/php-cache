@@ -31,6 +31,7 @@ Reply:
 {
   "cached": true,
   "url": "https://your-cache-server.com/cacher/data/473b507ce2f6c162b92d15dcbc106e30/image.png",
+  "original_url": "https://a-slow-server.com/image.png",
   "url_hash": "473b507ce2f6c162b92d15dcbc106e30",
   "file": "image.png",
   "type": "image/png"
@@ -44,6 +45,7 @@ Reply:
 {
   "cached": false,
   "url": "https://your-cache-server.com/cacher/data/473b507ce2f6c162b92d15dcbc106e30/image.png",
+  "original_url": "https://a-slow-server.com/image.png",
   "url_hash": "473b507ce2f6c162b92d15dcbc106e30",
   "file": "image.png",
   "type": "image/png"
@@ -58,6 +60,22 @@ Reply:
 {
   "cached": true,
   "url": "https://your-cache-server.com/cacher/data/473b507ce2f6c162b92d15dcbc106e30/image.png",
+  "original_url": "https://a-slow-server.com/image.png",
+  "url_hash": "473b507ce2f6c162b92d15dcbc106e30",
+  "file": "image.png",
+  "type": "image/png"
+}
+````
+
+You can also get URLs by their hash with the ``hash`` argument:  
+*beware: if URLS aren't stored, you'll query the hash of an empty URL string*
+``https://your-cache-server.com/cache/api.php?hash=473b507ce2f6c162b92d15dcbc106e30``  
+Reply:
+````json
+{
+  "cached": true,
+  "url": "https://your-cache-server.com/cacher/data/473b507ce2f6c162b92d15dcbc106e30/image.png",
+  "original_url": "https://a-slow-server.com/image.png",
   "url_hash": "473b507ce2f6c162b92d15dcbc106e30",
   "file": "image.png",
   "type": "image/png"

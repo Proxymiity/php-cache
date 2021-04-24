@@ -1,5 +1,7 @@
 <?php
-    function get_base_folder(){
+    $store_hashes = true;
+
+    function get_base_folder() {
         if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') {$p = 'https';} else {$p = 'http';}
         return $p . '://' . $_SERVER['SERVER_NAME'] . substr(__DIR__, strlen($_SERVER['DOCUMENT_ROOT']));
     }
@@ -61,10 +63,16 @@
         }
     }
 
-    function get_file_json($url){
-        return '{"cached":' . get_bool(cached($url)) . ',"url":"' . get_base_folder() . "/data/" . md5($_GET["url"]) .
-            "/" . basename($_GET["url"]) . '","url_hash":"' . md5($_GET["url"]) . '","file":"' . basename($_GET["url"])
-            . '","type":"' . get_mime("./data/" . md5($_GET["url"]) . "/" . basename($_GET["url"])) . '"}';
+    function get_file_json($url) {
+        $dt = array(
+            "cached" => get_bool(cached($url)),
+            "url" => get_base_folder() . "/data/" . md5($url) . "/" . basename($url),
+            "original_url" => $url,
+            "url_hash" => md5($url),
+            "file" => basename($url),
+            "type" => get_mime("./data/" . md5($url) . "/" . basename($url))
+        );
+        return json_encode($dt);
     }
 
     function get_bool($int){
@@ -109,11 +117,13 @@
         $fn = basename($url);
         $pp = md5($url);
         mkdir("./data/" . $pp);
-        $ph = "./data/" . $pp . "/" .$fn;
+        $ph = "./data/" . $pp . "/" . $fn;
         $fp = fopen($ph, 'wb');
         $content = pass_proxy($url, $referer, $user, $pass);
         fwrite($fp, $content);
         fclose($fp);
+        global $store_hashes;
+        if ($store_hashes){$f = fopen("./data/" . $pp . "/url", 'wb'); fwrite($f, $url); fclose($f);}
     }
 
     function load_cache($url) {
@@ -134,5 +144,14 @@
         $fn = basename($url);
         $pp = md5($url);
         unlink("./data/" . $pp . "/" . $fn);
+        global $store_hashes; if ($store_hashes){unlink("./data/" . $pp . "/url");}
         rmdir("./data/" . $pp);
+    }
+
+    function hash_to_url($hash) {
+        $ph = "./data/" . $hash . "/url";
+        if (is_file($ph)) {
+            $f = fopen($ph, 'rb');
+            return fread($f, filesize($ph));
+        } else {return "";}
     }

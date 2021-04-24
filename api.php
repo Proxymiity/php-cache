@@ -1,6 +1,9 @@
 <?php
     include 'tools.php';
 
+    if (isset($_GET["hash"])){
+        $_GET["url"] = hash_to_url($_GET["hash"]);
+    }
     if (isset($_GET["delete"])){
         rem_cache($_GET["url"]);
     }
