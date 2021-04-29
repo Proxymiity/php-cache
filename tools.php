@@ -63,7 +63,7 @@
 
     function get_file_json($url) {
         $dt = array(
-            "cached" => get_bool(cached($url)),
+            "cached" => cached($url),
             "url" => get_base_folder() . "/data/" . md5($url) . "/" . basename($url),
             "original_url" => $url,
             "url_hash" => md5($url),
@@ -71,14 +71,6 @@
             "type" => get_mime("./data/" . md5($url) . "/" . basename($url))
         );
         return json_encode($dt);
-    }
-
-    function get_bool($int){
-        if ($int){
-            return "true";
-        } else {
-            return "false";
-        }
     }
 
     function get_mime($p) {
