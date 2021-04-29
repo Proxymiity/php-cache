@@ -1,5 +1,8 @@
 <?php
     include 'tools.php';
+    if (isset($_GET["hash"])){
+        $_GET["url"] = hash_to_url($_GET["hash"]);
+    }
     if (isset($_GET["live"])){
         echo pass_proxy($_GET["url"], $_GET["referer"], $_GET["user"], $_GET["pass"], true);
         exit();

@@ -1,27 +1,31 @@
 # php-cache
-The ugliest file cacher you've ever seen, written in PHP.  
+The ugliest file cache you've ever seen, written in PHP.  
 This is not intended for a "public" usage.  
 The original use case is to cache images from SEA servers which takes a while to reply.  
 **There is no authentication included with the cache nor the API.**
 
 ### Cache usage
 Get a file, or cache it if it's not in the cache:  
-``https://your-cache-server.com/cache/cacher.php?url=https://a-slow-server.com/image.png``
+``https://your-cache-server.com/cache/cache.php?url=https://a-slow-server.com/image.png``
 
 ...using a custom referer:  
-``https://your-cache-server.com/cache/cacher.php?url=https://a-slow-server.com/image.png&referer=https://a-slow-server.com``
+``https://your-cache-server.com/cache/cache.php?url=https://a-slow-server.com/image.png&referer=https://a-slow-server.com``
 
 ...using basic auth:  
-``https://your-cache-server.com/cache/cacher.php?url=https://a-slow-server.com/image.png&user=john&pass=doe``
+``https://your-cache-server.com/cache/cache.php?url=https://a-slow-server.com/image.png&user=john&pass=doe``
 
 ⚠️ The cache server **does not** remove files **nor update** stored files automatically. You'll need to do that manually:  
-``https://your-cache-server.com/cache/cacher.php?url=https://a-slow-server.com/image.png&refresh=1``
+``https://your-cache-server.com/cache/cache.php?url=https://a-slow-server.com/image.png&refresh=1``
 
 You can view a live version of the file using the live argument:  
-``https://your-cache-server.com/cache/cacher.php?url=https://a-slow-server.com/image.png&live=1``
+``https://your-cache-server.com/cache/cache.php?url=https://a-slow-server.com/image.png&live=1``
 
 *The live argument is prioritized over the refresh argument.  
 You don't have to actually set their value to true or 1, the script only checks if they're set.*
+
+You can also get URLs by their hash with the ``hash`` argument:  
+*beware: if URLS aren't stored, you'll query the hash of an empty URL string*
+``https://your-cache-server.com/cache/cache.php?hash=473b507ce2f6c162b92d15dcbc106e30``
 
 ### API Usage
 Get the status of a file (its hash, filename, MIME type and cache status):  
@@ -30,7 +34,7 @@ Reply:
 ````json
 {
   "cached": true,
-  "url": "https://your-cache-server.com/cacher/data/473b507ce2f6c162b92d15dcbc106e30/image.png",
+  "url": "https://your-cache-server.com/cache/data/473b507ce2f6c162b92d15dcbc106e30/image.png",
   "original_url": "https://a-slow-server.com/image.png",
   "url_hash": "473b507ce2f6c162b92d15dcbc106e30",
   "file": "image.png",
@@ -44,7 +48,7 @@ Reply:
 ````json
 {
   "cached": false,
-  "url": "https://your-cache-server.com/cacher/data/473b507ce2f6c162b92d15dcbc106e30/image.png",
+  "url": "https://your-cache-server.com/cache/data/473b507ce2f6c162b92d15dcbc106e30/image.png",
   "original_url": "https://a-slow-server.com/image.png",
   "url_hash": "473b507ce2f6c162b92d15dcbc106e30",
   "file": "image.png",
@@ -59,7 +63,7 @@ Reply:
 ````json
 {
   "cached": true,
-  "url": "https://your-cache-server.com/cacher/data/473b507ce2f6c162b92d15dcbc106e30/image.png",
+  "url": "https://your-cache-server.com/cache/data/473b507ce2f6c162b92d15dcbc106e30/image.png",
   "original_url": "https://a-slow-server.com/image.png",
   "url_hash": "473b507ce2f6c162b92d15dcbc106e30",
   "file": "image.png",
@@ -74,7 +78,7 @@ Reply:
 ````json
 {
   "cached": true,
-  "url": "https://your-cache-server.com/cacher/data/473b507ce2f6c162b92d15dcbc106e30/image.png",
+  "url": "https://your-cache-server.com/cache/data/473b507ce2f6c162b92d15dcbc106e30/image.png",
   "original_url": "https://a-slow-server.com/image.png",
   "url_hash": "473b507ce2f6c162b92d15dcbc106e30",
   "file": "image.png",

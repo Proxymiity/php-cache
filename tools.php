@@ -1,6 +1,4 @@
 <?php
-    $store_hashes = true;
-
     function get_base_folder() {
         if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') {$p = 'https';} else {$p = 'http';}
         return $p . '://' . $_SERVER['SERVER_NAME'] . substr(__DIR__, strlen($_SERVER['DOCUMENT_ROOT']));
@@ -122,8 +120,7 @@
         $content = pass_proxy($url, $referer, $user, $pass);
         fwrite($fp, $content);
         fclose($fp);
-        global $store_hashes;
-        if ($store_hashes){$f = fopen("./data/" . $pp . "/url", 'wb'); fwrite($f, $url); fclose($f);}
+        $f = fopen("./data/" . $pp . "/url", 'wb'); fwrite($f, $url); fclose($f);
     }
 
     function load_cache($url) {
@@ -144,7 +141,7 @@
         $fn = basename($url);
         $pp = md5($url);
         unlink("./data/" . $pp . "/" . $fn);
-        global $store_hashes; if ($store_hashes){unlink("./data/" . $pp . "/url");}
+        unlink("./data/" . $pp . "/url");
         rmdir("./data/" . $pp);
     }
 
