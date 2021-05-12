@@ -11,5 +11,6 @@
     if (isset($_GET["create"])){
         cache($_GET["url"], $_GET["referer"], $_GET["user"], $_GET["pass"]);
     }
+    header("Content-Type: application/json");
     header($_SERVER['SERVER_PROTOCOL'] . ' 200 OK', true, 200);
     echo get_file_json($_GET["url"]);
