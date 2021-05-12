@@ -1,4 +1,5 @@
 <?php
+    #include 'auth.php';
     include 'tools.php';
 
     if (isset($_GET["hash"])){

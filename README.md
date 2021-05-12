@@ -85,3 +85,7 @@ Reply:
   "type": "image/png"
 }
 ````
+
+# Authentication
+You can uncomment ``include 'auth.php';`` in each file and edit ``auth.php``'s array and append a ``token=`` parameter.
+If you pass a token that's not in the array, you'll get a 403 error.
