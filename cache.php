@@ -1,5 +1,5 @@
 <?php
-    #include 'auth.php';
+    include 'auth.php';
     include 'tools.php';
     if (isset($_GET["hash"])){
         $_GET["url"] = hash_to_url($_GET["hash"]);
@@ -15,7 +15,7 @@
         cache($_GET["url"], $_GET["referer"], $_GET["user"], $_GET["pass"]);
     }
     if (isset($_GET["redirect"])){
-        header('Location: ' . get_base_folder() . "/data/" . md5($_GET["url"]) . "/" . basename($_GET["url"]));
+        header('Location: ' . get_url($_GET["url"]));
         exit();
     }
     header('Content-Type: ' . get_mime("./data/" . md5($_GET["url"]) . "/" . basename($_GET["url"])));
