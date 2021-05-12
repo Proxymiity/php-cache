@@ -20,6 +20,9 @@ Get a file, or cache it if it's not in the cache:
 You can view a live version of the file using the live argument:  
 ``https://your-cache-server.com/cache/cache.php?url=https://a-slow-server.com/image.png&live=1``
 
+...or redirect the client to the file's URL for large files:  
+``https://your-cache-server.com/cache/cache.php?url=https://a-slow-server.com/image.png&redirect=1``
+
 *The live argument is prioritized over the refresh argument.  
 You don't have to actually set their value to true or 1, the script only checks if they're set.*
 

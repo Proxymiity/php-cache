@@ -64,7 +64,7 @@
     function get_file_json($url) {
         $dt = array(
             "cached" => cached($url),
-            "url" => get_base_folder() . "/data/" . md5($url) . "/" . basename($url),
+            "url" => get_url($url),
             "original_url" => $url,
             "url_hash" => md5($url),
             "file" => basename($url),
@@ -119,8 +119,12 @@
         $fn = basename($url);
         $pp = md5($url);
         $ph = "./data/" . $pp . "/" . $fn;
-        $fp = fopen("./data/" . $pp . "/" .$fn, 'rb');
+        $fp = fopen($ph, 'rb');
         return fread($fp, filesize($ph));
+    }
+
+    function get_url($url) {
+        return get_base_folder() . "/data/" . md5($url) . "/" . basename($url);
     }
 
     function cached($url) {

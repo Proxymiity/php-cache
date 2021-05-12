@@ -14,6 +14,10 @@
     if (!cached($_GET["url"])) {
         cache($_GET["url"], $_GET["referer"], $_GET["user"], $_GET["pass"]);
     }
+    if (isset($_GET["redirect"])){
+        header('Location: ' . get_base_folder() . "/data/" . md5($_GET["url"]) . "/" . basename($_GET["url"]));
+        exit();
+    }
     header('Content-Type: ' . get_mime("./data/" . md5($_GET["url"]) . "/" . basename($_GET["url"])));
     header('Content-Length: ' . filesize("./data/" . md5($_GET["url"]) . "/" . basename($_GET["url"])));
     header('Accept-Range: bytes');
