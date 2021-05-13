@@ -66,9 +66,9 @@
             "cached" => cached($url),
             "url" => get_url($url),
             "original_url" => $url,
-            "url_hash" => md5($url),
-            "file" => basename($url),
-            "type" => get_mime("./data/" . md5($url) . "/" . basename($url))
+            "url_hash" => md5(md_get_persistent_string($url)),
+            "file" => basename(md_get_persistent_string($url)),
+            "type" => get_mime(get_loc(md_get_persistent_string($url)))
         );
         return json_encode($dt);
     }
@@ -86,6 +86,7 @@
         $headers[] = 'Content-type: application/x-www-form-urlencoded;charset=UTF-8';
         $useragent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.128 Safari/537.36';
         $proxy = curl_init($url);
+        $rt_headers = [];
         curl_setopt($proxy, CURLOPT_HTTPHEADER, $headers);
         curl_setopt($proxy, CURLOPT_HEADER, 0);
         curl_setopt($proxy, CURLOPT_USERAGENT, $useragent);
@@ -94,49 +95,70 @@
         curl_setopt($proxy, CURLOPT_TIMEOUT, 30);
         curl_setopt($proxy, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($proxy, CURLOPT_FOLLOWLOCATION, 1);
-        $return = curl_exec($proxy);
+        curl_setopt($proxy, CURLOPT_URL, $url);
+        curl_setopt($proxy, CURLOPT_HEADERFUNCTION,
+            function($curl, $header) use (&$rt_headers)
+            {
+                $len = strlen($header);
+                $header = explode(':', $header, 2);
+                if (count($header) < 2)
+                    return $len;
+                $rt_headers[strtolower(trim($header[0]))][] = trim($header[1]);
+                return $len;
+            }
+        );
+        $rt_content = curl_exec($proxy);
         if ($set_headers){
             $contentType = curl_getinfo($proxy, CURLINFO_CONTENT_TYPE);
             header('Content-Type: ' . $contentType);
         }
+        $time = curl_getinfo($proxy, CURLINFO_TOTAL_TIME_T);
+        $status = curl_getinfo($proxy, CURLINFO_HTTP_CODE);
         curl_close($proxy);
-        return $return;
+        return Array(
+            "content" => $rt_content,
+            "headers" => $rt_headers,
+            "time" => $time,
+            "status" => $status
+        );
     }
 
     function cache($url, $referer, $user, $pass) {
-        $fn = basename($url);
-        $pp = md5($url);
+        $md_url = md_get_persistent_string($url);
+        $pp = md5($md_url);
         mkdir("./data/" . $pp);
-        $ph = "./data/" . $pp . "/" . $fn;
+        $ph = get_loc($md_url);
         $fp = fopen($ph, 'wb');
         $content = pass_proxy($url, $referer, $user, $pass);
-        fwrite($fp, $content);
+        fwrite($fp, $content["content"]);
         fclose($fp);
         $f = fopen("./data/" . $pp . "/url", 'wb'); fwrite($f, $url); fclose($f);
+        return md_get_response_json($url, $content["headers"], $content["time"], $content["status"], $ph);
     }
 
     function load_cache($url) {
-        $fn = basename($url);
-        $pp = md5($url);
-        $ph = "./data/" . $pp . "/" . $fn;
+        $ph = get_loc(md_get_persistent_string($url));
         $fp = fopen($ph, 'rb');
         return fread($fp, filesize($ph));
     }
 
     function get_url($url) {
+        $url = md_get_persistent_string($url);
         return get_base_folder() . "/data/" . md5($url) . "/" . basename($url);
     }
 
+    function get_loc($url) {
+        return "./data/" . md5($url) . "/" . basename($url);
+    }
+
     function cached($url) {
-        $fn = basename($url);
-        $pp = md5($url);
-        return file_exists("./data/" . $pp . "/" .$fn);
+        return file_exists(get_loc(md_get_persistent_string($url)));
     }
 
     function rem_cache($url) {
-        $fn = basename($url);
+        $url = md_get_persistent_string($url);
         $pp = md5($url);
-        unlink("./data/" . $pp . "/" . $fn);
+        unlink(get_loc($url));
         unlink("./data/" . $pp . "/url");
         rmdir("./data/" . $pp);
     }
@@ -147,4 +169,31 @@
             $f = fopen($ph, 'rb');
             return fread($f, filesize($ph));
         } else {return "";}
+    }
+
+    function md_get_persistent_string($url) {
+        $a = explode('/', $url);
+        $a = array_slice($a, -2);
+        return($a[0] . "/" . $a[1]);
+    }
+
+    function md_get_response_json($url, $headers, $time, $status, $path) {
+        if(strval($status) == "200") {$s = true;} else {$s = false;}
+        if($headers["x-cache"][0] == "HIT") {$c = true;} else {$c = false;}
+        $json =  Array(
+            "url" => $url,
+            "success" => $s,
+            "cached" => $c,
+            "time" => intval($time/1000),
+            "bytes" => filesize($path),
+            "api_response" => Array(
+                "cached" => cached($url),
+                "url" => get_url($url),
+                "original_url" => $url,
+                "url_hash" => md5(md_get_persistent_string($url)),
+                "file" => basename(md_get_persistent_string($url)),
+                "type" => get_mime(get_loc(md_get_persistent_string($url)))
+            )
+        );
+        return json_encode($json);
     }
