@@ -61,13 +61,17 @@
         }
     }
 
+    function get_file_str($file) {
+        return explode('?', basename($file), 2)[0];
+    }
+
     function get_file_json($url) {
         $dt = array(
             "cached" => cached($url),
             "url" => get_url($url),
             "original_url" => $url,
             "url_hash" => md5(md_get_persistent_string($url)),
-            "file" => basename(md_get_persistent_string($url)),
+            "file" => get_file_str(md_get_persistent_string($url)),
             "type" => get_mime(get_loc(md_get_persistent_string($url)))
         );
         return json_encode($dt);
@@ -76,14 +80,15 @@
     function get_mime($p) {
         $m = mime_content_type($p);
         if ($m==""){
-            $m = get_mime_type(basename($p));
+            $m = get_mime_type(get_file_str($p));
         }
         return $m;
     }
 
-    function pass_proxy($url, $referer, $user, $pass, $set_headers=false) {
+    function pass_proxy($url, $referer, $user, $pass, $bearer, $set_headers=false) {
         $headers[] = 'Connection: Keep-Alive';
         $headers[] = 'Content-type: application/x-www-form-urlencoded;charset=UTF-8';
+        if (!is_null($bearer)) { $headers[] = "Authorization: Bearer" . $bearer . "'"; }
         $useragent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.128 Safari/537.36';
         $proxy = curl_init($url);
         $rt_headers = [];
@@ -123,13 +128,13 @@
         );
     }
 
-    function cache($url, $referer, $user, $pass) {
+    function cache($url, $referer, $user, $pass, $bearer) {
         $md_url = md_get_persistent_string($url);
         $pp = md5($md_url);
         mkdir("./data/" . $pp);
         $ph = get_loc($md_url);
         $fp = fopen($ph, 'wb');
-        $content = pass_proxy($url, $referer, $user, $pass);
+        $content = pass_proxy($url, $referer, $user, $pass, $bearer);
         fwrite($fp, $content["content"]);
         fclose($fp);
         $f = fopen("./data/" . $pp . "/url", 'wb'); fwrite($f, $url); fclose($f);
@@ -144,11 +149,11 @@
 
     function get_url($url) {
         $url = md_get_persistent_string($url);
-        return get_base_folder() . "/data/" . md5($url) . "/" . basename($url);
+        return get_base_folder() . "/data/" . md5($url) . "/" . get_file_str($url);
     }
 
     function get_loc($url) {
-        return "./data/" . md5($url) . "/" . basename($url);
+        return "./data/" . md5($url) . "/" . get_file_str($url);
     }
 
     function cached($url) {
@@ -191,7 +196,7 @@
                 "url" => get_url($url),
                 "original_url" => $url,
                 "url_hash" => md5(md_get_persistent_string($url)),
-                "file" => basename(md_get_persistent_string($url)),
+                "file" => get_file_str(md_get_persistent_string($url)),
                 "type" => get_mime(get_loc(md_get_persistent_string($url)))
             )
         );
