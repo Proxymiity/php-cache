@@ -61,14 +61,18 @@
         }
     }
 
+    function get_file_str($file) {
+        return explode('?', basename($file), 2)[0];
+    }
+
     function get_file_json($url) {
         $dt = array(
             "cached" => cached($url),
             "url" => get_url($url),
             "original_url" => $url,
             "url_hash" => md5($url),
-            "file" => basename($url),
-            "type" => get_mime("./data/" . md5($url) . "/" . basename($url))
+            "file" => get_file_str($url),
+            "type" => get_mime(get_url($url))
         );
         return json_encode($dt);
     }
@@ -76,7 +80,7 @@
     function get_mime($p) {
         $m = mime_content_type($p);
         if ($m==""){
-            $m = get_mime_type(basename($p));
+            $m = get_mime_type(get_file_str($p));
         }
         return $m;
     }
@@ -104,7 +108,7 @@
     }
 
     function cache($url, $referer, $user, $pass) {
-        $fn = basename($url);
+        $fn = get_file_str($url);
         $pp = md5($url);
         mkdir("./data/" . $pp);
         $ph = "./data/" . $pp . "/" . $fn;
@@ -116,7 +120,7 @@
     }
 
     function load_cache($url) {
-        $fn = basename($url);
+        $fn = get_file_str($url);
         $pp = md5($url);
         $ph = "./data/" . $pp . "/" . $fn;
         $fp = fopen($ph, 'rb');
@@ -124,17 +128,17 @@
     }
 
     function get_url($url) {
-        return get_base_folder() . "/data/" . md5($url) . "/" . basename($url);
+        return get_base_folder() . "/data/" . md5($url) . "/" . get_file_str($url);
     }
 
     function cached($url) {
-        $fn = basename($url);
+        $fn = get_file_str($url);
         $pp = md5($url);
         return file_exists("./data/" . $pp . "/" .$fn);
     }
 
     function rem_cache($url) {
-        $fn = basename($url);
+        $fn = get_file_str($url);
         $pp = md5($url);
         unlink("./data/" . $pp . "/" . $fn);
         unlink("./data/" . $pp . "/url");

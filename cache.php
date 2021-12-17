@@ -18,7 +18,7 @@
         header('Location: ' . get_url($_GET["url"]));
         exit();
     }
-    header('Content-Type: ' . get_mime("./data/" . md5($_GET["url"]) . "/" . basename($_GET["url"])));
-    header('Content-Length: ' . filesize("./data/" . md5($_GET["url"]) . "/" . basename($_GET["url"])));
+    header('Content-Type: ' . get_mime(get_url($_GET["url"])));
+    header('Content-Length: ' . filesize("./data/" . md5($_GET["url"]) . "/" . get_file_str($_GET["url"])));
     header('Accept-Range: bytes');
     echo load_cache($_GET["url"]);
