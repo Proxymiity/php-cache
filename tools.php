@@ -85,9 +85,10 @@
         return $m;
     }
 
-    function pass_proxy($url, $referer, $user, $pass, $set_headers=false) {
+    function pass_proxy($url, $referer, $user, $pass, $bearer, $set_headers=false) {
         $headers[] = 'Connection: Keep-Alive';
         $headers[] = 'Content-type: application/x-www-form-urlencoded;charset=UTF-8';
+        if (!is_null($bearer)) { $headers[] = "Authorization: Bearer" . $bearer . "'"; }
         $useragent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.128 Safari/537.36';
         $proxy = curl_init($url);
         curl_setopt($proxy, CURLOPT_HTTPHEADER, $headers);
@@ -107,13 +108,13 @@
         return $return;
     }
 
-    function cache($url, $referer, $user, $pass) {
+    function cache($url, $referer, $user, $pass, $bearer) {
         $fn = get_file_str($url);
         $pp = md5($url);
         mkdir("./data/" . $pp);
         $ph = "./data/" . $pp . "/" . $fn;
         $fp = fopen($ph, 'wb');
-        $content = pass_proxy($url, $referer, $user, $pass);
+        $content = pass_proxy($url, $referer, $user, $pass, $bearer);
         fwrite($fp, $content);
         fclose($fp);
         $f = fopen("./data/" . $pp . "/url", 'wb'); fwrite($f, $url); fclose($f);

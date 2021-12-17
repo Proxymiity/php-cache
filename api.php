@@ -9,7 +9,7 @@
         rem_cache($_GET["url"]);
     }
     if (isset($_GET["create"])){
-        cache($_GET["url"], $_GET["referer"], $_GET["user"], $_GET["pass"]);
+        cache($_GET["url"], $_GET["referer"], $_GET["user"], $_GET["pass"], $_GET["bearer"]);
     }
     header("Content-Type: application/json");
     header($_SERVER['SERVER_PROTOCOL'] . ' 200 OK', true, 200);
