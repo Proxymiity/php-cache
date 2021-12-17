@@ -72,7 +72,7 @@
             "original_url" => $url,
             "url_hash" => md5($url),
             "file" => get_file_str($url),
-            "type" => get_mime(get_url($url))
+            "type" => get_mime("./data/" . md5($url) . "/" . get_file_str($url))
         );
         return json_encode($dt);
     }
