@@ -14,6 +14,9 @@ Get a file, or cache it if it's not in the cache:
 ...using basic auth:  
 ``https://your-cache-server.com/cache/cache.php?url=https://a-slow-server.com/image.png&user=john&pass=doe``
 
+...using a bearer:  
+``https://your-cache-server.com/cache/cache.php?url=https://a-slow-server.com/image.png&bearer=nosenpaithisisoursecret``
+
 ⚠️ The cache server **does not** remove files **nor update** stored files automatically. You'll need to do that manually:  
 ``https://your-cache-server.com/cache/cache.php?url=https://a-slow-server.com/image.png&refresh=1``
 
